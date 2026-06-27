@@ -81,8 +81,16 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // Stop auto-scroll on any user interaction with the container
-        panoramaContainer.addEventListener('mouseenter', stopAutoScroll, { once: true });
-        panoramaContainer.addEventListener('touchstart', stopAutoScroll, { once: true });
+        const hidePrompt = function() {
+            const prompt = document.querySelector('.interaction-prompt');
+            if (prompt) {
+                prompt.style.opacity = '0';
+                setTimeout(function() { prompt.remove(); }, 500);
+            }
+            stopAutoScroll();
+        };
+        panoramaContainer.addEventListener('mouseenter', hidePrompt, { once: true });
+        panoramaContainer.addEventListener('touchstart', hidePrompt, { once: true });
 
         // Start the show!
         updateSlider(); // Initial load of the first slide

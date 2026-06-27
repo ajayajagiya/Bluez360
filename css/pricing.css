@@ -10,13 +10,13 @@
 }
 
 .pricing-card {
-    background: #ffffff;
+    background: var(--white);
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
     padding: 2.5rem 2rem;
     display: flex;
     flex-direction: column;
-    border-top: 6px solid #09598f;
+    border-top: 6px solid var(--primary);
     position: relative;
     overflow: hidden;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -43,7 +43,7 @@
     right: -40px;
     transform: rotate(45deg);
     background-color: #ffc107;
-    color: #333;
+    color: var(--text-main);
     padding: 5px 40px;
     font-size: 0.9rem;
     font-weight: 700;
@@ -56,39 +56,39 @@
 .pricing-title {
     font-size: 1.8rem;
     font-weight: 600;
-    color: #333;
+    color: var(--text-main);
     margin: 0 0 0.25rem 0;
 }
 
 .pricing-price {
     font-size: 2.5rem;
     font-weight: 700;
-    color: #09598f;
+    color: var(--primary);
     margin: 0 0 1rem 0;
 }
 
 
 .pricing-price.custom-quote {
     font-size: 2rem;
-    color: #333;
+    color: var(--text-main);
     font-weight: 600;
 }
 
 .pricing-description {
-    color: #555;
+    color: var(--text-muted);
     margin: 0 0 2rem 0;
     line-height: 1.6;
 }
 
 .pricing-delivery {
-    color: #555;
+    color: var(--text-muted);
     font-size: 0.9rem;
 
     margin: -1rem 0 2rem 0;
     display: flex;
     align-items: center;
     gap: 8px;
-    background-color: #f9f9f9;
+    background-color: var(--bg-alt);
     padding: 10px 12px;
     border-radius: 6px;
 }
@@ -143,7 +143,7 @@
 
 .shared-bonuses h3 {
     font-size: 1.8rem;
-    color: #09598f;
+    color: var(--primary);
     margin: 0 0 2rem 0;
 }
 
@@ -161,13 +161,13 @@
 
 .bonus-item h4 {
     font-size: 1.3rem;
-    color: #333;
+    color: var(--text-main);
     margin: 0 0 1rem 0;
 }
 
 .bonus-item p,
 .bonus-item li {
-    color: #555;
+    color: var(--text-muted);
     line-height: 1.6;
     font-size: 1rem;
 }
@@ -198,7 +198,7 @@
 }
 
 .charge-item {
-    background: #ffffff;
+    background: var(--white);
     padding: 1.5rem;
     border-radius: 8px;
     border-left: 4px solid #ffc107;
@@ -224,13 +224,13 @@
     display: block;
     margin-bottom: 0.5rem;
     font-size: 1.2rem;
-    color: #333;
+    color: var(--text-main);
     font-weight: 600;
 }
 
 .charge-item p {
     margin: 0;
-    color: #555;
+    color: var(--text-muted);
     line-height: 1.6;
 }
 
@@ -256,7 +256,7 @@
     padding: 1.5rem 1rem;
     font-size: 1.1rem;
     font-weight: 600;
-    color: #333;
+    color: var(--text-main);
     cursor: pointer;
     display: flex;
     justify-content: space-between;
@@ -265,13 +265,13 @@
 }
 
 .faq-question:hover {
-    background-color: #f9f9f9;
+    background-color: var(--bg-alt);
 }
 
 .faq-icon {
     font-size: 1.5rem;
     font-weight: 300;
-    color: #09598f;
+    color: var(--primary);
     transition: transform 0.3s ease-in-out;
 }
 
@@ -280,7 +280,7 @@
     overflow: hidden;
     transition: max-height 0.3s ease-in-out, padding 0.3s ease-in-out;
     padding: 0 1rem;
-    color: #555;
+    color: var(--text-muted);
     line-height: 1.7;
 }
 
@@ -317,7 +317,7 @@
     top: 10px;
     right: 15px;
     font-size: 32px;
-    color: #333;
+    color: var(--text-main);
     cursor: pointer;
 }
 
