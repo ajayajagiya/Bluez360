@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bluez360 — Collab</title>
+  <link rel="icon" type="image/x-icon" href="assets/icons/favicon.ico">
+</head>
+<body>
+<!-- Bluez360 — Instagram Collaboration (mobile scrollytelling) -->
+<style>
+  html, body { margin:0; padding:0; background:#000; }
+  .bz * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent;
+    font-family:-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; }
+  .bz-screen { width:100%; min-height:100vh; background:#000; display:flex; justify-content:center; }
+  .bz { width:100%; background:#000; color:#fff; overflow-x:hidden; }
+
+  /* top bar — instagram style */
+  .bz-bar { position:sticky; top:0; z-index:50; display:flex; align-items:center; gap:10px;
+    padding:12px 14px; background:rgba(0,0,0,.85); backdrop-filter:blur(12px);
+    border-bottom:1px solid #1c1c1c; }
+  .bz-ring { width:38px; height:38px; border-radius:50%; padding:2.5px;
+    background:linear-gradient(45deg,#feda75,#fa7e1e,#d62976,#962fbf,#4f5bd5); }
+  .bz-ring span { display:flex; align-items:center; justify-content:center; width:100%; height:100%;
+    border-radius:50%; background:#1a1a1a; border:2px solid #000; overflow:hidden; }
+  .bz-ring span b { font-size:8px; font-weight:700; letter-spacing:.5px; color:#888; }
+  .bz-ring img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
+  .bz-bar b { font-size:15px; }
+  .bz-bar .bz-v { font-size:11px; color:#3897f0; margin-left:-4px; }
+
+  /* hero */
+  .bz-hero { text-align:center; padding:46px 22px 30px; }
+  .bz-logo { font-size:38px; font-weight:800; letter-spacing:.5px;
+    background:linear-gradient(45deg,#feda75,#fa7e1e,#d62976,#962fbf,#4f5bd5);
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+  .bz-hero p { color:#a8a8a8; font-size:14px; margin-top:10px; line-height:1.5; }
+  .bz-down { margin-top:26px; font-size:12px; color:#666; animation:bzbob 1.6s ease-in-out infinite; }
+  @keyframes bzbob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(6px)} }
+
+  /* category picker */
+  .bz-q { text-align:center; font-size:15px; font-weight:600; color:#fff; margin:10px 0 18px; }
+  .bz-pick { display:grid; grid-template-columns:1fr 1fr; gap:12px; padding:0 18px 40px; }
+  .bz-pick button { cursor:pointer; border:1px solid #2a2a2a; border-radius:18px; padding:22px 12px;
+    background:#0e0e0e; color:#fff; font-size:14px; font-weight:600; line-height:1.4;
+    transition:transform .2s, border-color .2s, background .2s; }
+  .bz-pick button .e { display:block; font-size:30px; margin-bottom:8px; }
+  .bz-pick button:active { transform:scale(.95); }
+  .bz-pick button:hover { border-color:#d62976; background:#150c12; }
+
+  /* story stage */
+  .bz-story { display:none; }
+  .bz-story.on { display:block; }
+  .bz-step { min-height:88vh; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding:40px 22px; text-align:center; }
+  .bz-anim { opacity:0; transform:translateY(40px) scale(.9); transition:opacity .7s ease, transform .7s cubic-bezier(.2,.7,.2,1); will-change:transform,opacity; }
+  .bz-anim.rot { transform:translateY(40px) rotate(-8deg) scale(.85); }
+  .bz-anim.in { opacity:1; transform:none; }
+
+  .bz-kick { font-size:12px; font-weight:700; letter-spacing:2px; text-transform:uppercase;
+    color:#d62976; margin-bottom:14px; }
+  .bz-big { font-size:30px; font-weight:800; line-height:1.2; }
+  .bz-grad { background:linear-gradient(45deg,#fa7e1e,#d62976,#962fbf,#4f5bd5);
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+  .bz-step p { color:#cfcfcf; font-size:17px; line-height:1.65; margin-top:14px; max-width:340px; }
+
+  .bz-pricebox { background:linear-gradient(135deg,#1a0f16,#0d0d0d); border:1px solid #2a2a2a;
+    border-radius:22px; padding:30px 26px; }
+  .bz-price { font-size:42px; font-weight:800; }
+  .bz-price small { font-size:16px; color:#a8a8a8; font-weight:600; }
+  .bz-cap { color:#feda75; font-size:13px; margin-top:8px; font-weight:600; }
+  .bz-eg { margin-top:14px; padding-top:12px; border-top:1px solid #2a2a2a; display:flex; flex-direction:column; gap:6px; }
+  .bz-eg div { display:flex; justify-content:space-between; font-size:13px; color:#cfcfcf; }
+  .bz-eg b { color:#fff; }
+
+  .bz-list { list-style:none; text-align:left; max-width:340px; width:100%; }
+  .bz-list li { font-size:16.5px; line-height:1.65; color:#ededed; padding:14px 0 14px 32px; position:relative;
+    border-bottom:1px solid #1a1a1a; }
+  .bz-list li::before { content:"✦"; position:absolute; left:4px; top:15px; color:#d62976; }
+
+  .bz-tc { width:100%; max-width:360px; text-align:left; background:#0c0c0c; border:1px solid #222;
+    border-radius:16px; padding:6px 18px; }
+  .bz-tc summary { cursor:pointer; list-style:none; font-size:14px; font-weight:700; color:#cfcfcf;
+    padding:14px 0; outline:none; display:flex; justify-content:space-between; }
+  .bz-tc summary::-webkit-details-marker { display:none; }
+  .bz-tc[open] summary { color:#fff; }
+  .bz-tc ul { list-style:none; padding-bottom:14px; }
+  .bz-tc li { font-size:14px; line-height:1.6; color:#9a9a9a; padding:8px 0 8px 22px; position:relative; }
+  .bz-tc li::before { content:"§"; position:absolute; left:2px; color:#962fbf; }
+
+  .bz-faq { width:100%; max-width:360px; text-align:left; margin-bottom:14px; }
+  .bz-faq > p { font-size:13px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:#666; margin-bottom:10px; }
+  .bz-faq details { background:#0c0c0c; border:1px solid #222; border-radius:14px; padding:4px 16px; margin-bottom:8px; }
+  .bz-faq summary { cursor:pointer; list-style:none; font-size:15px; font-weight:600; color:#eaeaea; padding:13px 0; display:flex; justify-content:space-between; gap:10px; outline:none; }
+  .bz-faq summary::-webkit-details-marker { display:none; }
+  .bz-faq details[open] summary { color:#d62976; }
+  .bz-faq details p { font-size:14px; line-height:1.6; color:#9a9a9a; padding:0 0 14px; }
+
+  .bz-cta { display:flex; align-items:center; justify-content:center; gap:8px; text-decoration:none;
+    color:#fff; font-weight:700; font-size:16px; padding:16px 30px; border-radius:14px;
+    background:linear-gradient(45deg,#fa7e1e,#d62976,#962fbf,#4f5bd5);
+    box-shadow:0 8px 24px rgba(214,41,118,.4); }
+  .bz-back { display:block; margin:24px auto 0; background:none; border:1px solid #333; color:#888;
+    font-size:13px; padding:10px 20px; border-radius:20px; cursor:pointer; }
+  .bz-foot { text-align:center; font-size:11px; color:#555; padding:30px 24px 50px; line-height:1.7; }
+  .bz-dots { position:fixed; top:50%; left:clamp(8px, calc(50% + 214px), calc(100% - 16px));
+    transform:translateY(-50%); z-index:60; display:none; flex-direction:column; gap:9px; }
+  .bz-dots.on { display:flex; }
+  .bz-dots i { width:7px; height:7px; border-radius:50%; background:#3a3a3a; transition:all .3s; }
+  .bz-dots i.act { background:linear-gradient(45deg,#fa7e1e,#d62976,#962fbf); height:18px; border-radius:5px; }
+</style>
+<style>
+  @media (min-width: 769px) {
+    .bz { max-width: 480px; border-left: 1px solid #161616; border-right: 1px solid #161616; }
+  }
+</style>
+
+<div class="bz-screen">
+<div class="bz">
+  <div class="bz-bar">
+    <div class="bz-ring"><span><img src="assets/icons/logo2.png" alt="Bluez360"></span></div>
+    <b>bluez360</b><span class="bz-v">✔</span>
+  </div>
+
+  <!-- INTRO -->
+  <div id="bz-intro">
+    <div class="bz-hero">
+      <div class="bz-logo">Bluez360</div>
+      <p>Let's collab on Instagram 📸<br>Find what's in it for you.</p>
+      <div class="bz-down">▾ pick one to begin</div>
+    </div>
+    <div class="bz-q">Who are you?</div>
+    <div class="bz-pick">
+      <button data-story="business"><span class="e">🏪</span>Business owner</button>
+      <button data-story="influencer"><span class="e">🎬</span>Influencer</button>
+      <button data-story="both"><span class="e">⭐</span>Business + Influencer</button>
+      <button data-story="agency"><span class="e">🤝</span>Agency / Reseller</button>
+    </div>
+  </div>
+
+  <!-- BUSINESS -->
+  <div class="bz-story" id="s-business">
+    <div class="bz-step"><div class="bz-anim"><div class="bz-kick">For Business Owners</div>
+      <div class="bz-big">Get a <span class="bz-grad">free shoot</span> for your business</div></div></div>
+    <div class="bz-step"><div class="bz-anim rot"><div class="bz-pricebox">
+      <div class="bz-kick">100% Free</div><div class="bz-price">₹0</div>
+      <p>Instagram photos & videos of your space.</p></div></div></div>
+    <div class="bz-step"><div class="bz-anim"><ul class="bz-list">
+      <li>We shoot photos and videos of your business for Instagram — completely free.</li>
+      <li>We post your business on the Bluez360 page so more people discover you.</li>
+      <li>You also get a shoutout and a feature on our page.</li>
+      <li>In return, you share one post and one story tagging @bluez360, and keep them live for at least 24 hours.</li>
+    </ul></div></div>
+    <div class="bz-step"><div class="bz-anim">
+      <div class="bz-faq"><p>Questions?</p>
+        <details><summary>Is the shoot really free? <span>＋</span></summary><p>Yes. The Instagram photos and videos cost you nothing. You only share one post and story tagging us.</p></details>
+        <details><summary>Do I get a 360° tour too? <span>＋</span></summary><p>No. The free shoot is Instagram content only. 360° tours are a paid service, posted on Google Maps.</p></details>
+        <details><summary>How long does it take? <span>＋</span></summary><p>We schedule a time that suits you and share the content shortly after the shoot.</p></details>
+      </div>
+      <details class="bz-tc"><summary>Terms &amp; Conditions <span>＋</span></summary><ul>
+        <li>Free shoot is Instagram content only.</li>
+        <li>360° tours are always paid — done for Google Maps only.</li>
+        <li>Shoot scheduled &amp; approved by Bluez360.</li>
+        <li>Feature removed if your tag/post is taken down.</li>
+        <li>One free shoot per business.</li>
+        <li>No reselling/reusing the shoot for paid ads without permission.</li>
+        <li>Bluez360 holds all rights to the content. Decision is final.</li>
+      </ul></details>
+      <a class="bz-cta" style="margin-top:22px" href="https://instagram.com/bluez360" target="_blank">DM us to book 📩</a>
+      <button class="bz-back" data-back>← choose again</button>
+    </div></div>
+  </div>
+
+  <!-- INFLUENCER -->
+  <div class="bz-story" id="s-influencer">
+    <div class="bz-step"><div class="bz-anim"><div class="bz-kick">For Influencers</div>
+      <div class="bz-big">Post a reel.<br><span class="bz-grad">Get paid.</span></div></div></div>
+    <div class="bz-step"><div class="bz-anim rot"><div class="bz-pricebox">
+      <div class="bz-kick">Pay per views</div><div class="bz-price">₹50<small> / 2,000 views</small></div>
+      <div class="bz-cap">Up to ₹2,000 per reel</div>
+      <div class="bz-eg">
+        <div>10k views<b>₹250</b></div>
+        <div>50k views<b>₹1,250</b></div>
+        <div>80k+ views<b>₹2,000 (max)</b></div>
+      </div></div></div></div>
+    <div class="bz-step"><div class="bz-anim"><ul class="bz-list">
+      <li>You earn ₹25 for every 1,000 real views your reel gets.</li>
+      <li>You can earn up to ₹2,000 from a single reel.</li>
+      <li>Views are counted after the reel stays live for 7 days.</li>
+      <li>We pay you within 2 days after that.</li>
+    </ul></div></div>
+    <div class="bz-step"><div class="bz-anim">
+      <div class="bz-faq"><p>Questions?</p>
+        <details><summary>How are views counted? <span>＋</span></summary><p>Only real, organic views on Instagram count. Views from ads or paid promotion are not included.</p></details>
+        <details><summary>When do I get paid? <span>＋</span></summary><p>After your reel stays live for 7 days, we count the views and pay you within 2 days.</p></details>
+        <details><summary>Can I post more than one reel? <span>＋</span></summary><p>One paid reel per influencer each month.</p></details>
+      </div>
+      <details class="bz-tc"><summary>Terms &amp; Conditions <span>＋</span></summary><ul>
+        <li>Collab approved by Bluez360 before posting.</li>
+        <li>No copied content. No reposting same content.</li>
+        <li>Must stay live 7 full days — removed tag/collab = no pay.</li>
+        <li>One paid reel per influencer per month.</li>
+        <li>No bought views, bots, or fake engagement.</li>
+        <li>Paid/ad views not counted — organic only.</li>
+        <li>Public account, 30+ days old, your own feed.</li>
+        <li>No multiple accounts for the same person.</li>
+        <li>Bluez360's view count &amp; decision are final.</li>
+      </ul></details>
+      <a class="bz-cta" style="margin-top:22px" href="https://instagram.com/bluez360" target="_blank">DM us to collab 📩</a>
+      <button class="bz-back" data-back>← choose again</button>
+    </div></div>
+  </div>
+
+  <!-- BOTH -->
+  <div class="bz-story" id="s-both">
+    <div class="bz-step"><div class="bz-anim"><div class="bz-kick">Business + Influencer</div>
+      <div class="bz-big">You get <span class="bz-grad">both</span> deals</div></div></div>
+    <div class="bz-step"><div class="bz-anim rot"><div class="bz-pricebox">
+      <div class="bz-kick">Deal 1 · Free</div><div class="bz-price">₹0</div>
+      <p>Free Instagram shoot + feature on our page.</p></div></div></div>
+    <div class="bz-step"><div class="bz-anim"><ul class="bz-list">
+      <li>We shoot your business for Instagram, free of cost.</li>
+      <li>You get a feature and a shoutout on the Bluez360 page.</li>
+      <li>You share one post and one story tagging @bluez360, live for at least 24 hours.</li>
+    </ul></div></div>
+    <div class="bz-step"><div class="bz-anim rot"><div class="bz-pricebox">
+      <div class="bz-kick">Deal 2 · Paid</div><div class="bz-price">₹50<small> / 2,000 views</small></div>
+      <div class="bz-cap">Up to ₹2,000 per reel</div>
+      <div class="bz-eg">
+        <div>10k views<b>₹250</b></div>
+        <div>50k views<b>₹1,250</b></div>
+        <div>80k+ views<b>₹2,000 (max)</b></div>
+      </div></div></div></div>
+    <div class="bz-step"><div class="bz-anim"><ul class="bz-list">
+      <li>You earn ₹25 for every 1,000 real views, up to ₹2,000 per reel.</li>
+      <li>Views are counted after 7 days, and we pay within 2 days after that.</li>
+      <li>You can earn from one paid reel each month.</li>
+    </ul></div></div>
+    <div class="bz-step"><div class="bz-anim">
+      <div class="bz-faq"><p>Questions?</p>
+        <details><summary>Can I use both deals? <span>＋</span></summary><p>Yes. You get the free Instagram shoot for your business and you can also earn from a paid reel.</p></details>
+        <details><summary>Is the 360° tour included? <span>＋</span></summary><p>No. 360° tours are always paid and posted on Google Maps. The free part is Instagram content only.</p></details>
+        <details><summary>When do I get paid for the reel? <span>＋</span></summary><p>After 7 days live, views are counted and we pay within 2 days. One paid reel per month.</p></details>
+      </div>
+      <details class="bz-tc"><summary>Terms &amp; Conditions <span>＋</span></summary><ul>
+        <li>Free shoot = Instagram content only. 360° tours always paid (Google Maps only).</li>
+        <li>Shoot scheduled &amp; approved. One free shoot per business.</li>
+        <li>Feature removed if post/tag taken down. No reselling without permission.</li>
+        <li>Reel: approved before posting, no copied/reposted content.</li>
+        <li>Live 7 full days, organic views only, no bots/ads.</li>
+        <li>Public account 30+ days, own feed. Count &amp; decision final.</li>
+        <li>All rights reserved by Bluez360.</li>
+      </ul></details>
+      <a class="bz-cta" style="margin-top:22px" href="https://instagram.com/bluez360" target="_blank">DM us 📩</a>
+      <button class="bz-back" data-back>← choose again</button>
+    </div></div>
+  </div>
+
+  <!-- AGENCY -->
+  <div class="bz-story" id="s-agency">
+    <div class="bz-step"><div class="bz-anim"><div class="bz-kick">Agency / Reseller</div>
+      <div class="bz-big">Send clients.<br><span class="bz-grad">Earn commission.</span></div></div></div>
+    <div class="bz-step"><div class="bz-anim rot"><div class="bz-pricebox">
+      <div class="bz-kick">Per booking</div><div class="bz-price">10%</div>
+      <div class="bz-cap">Up to ₹1,000 per booking</div>
+      <div class="bz-eg">
+        <div>₹2,500 order<b>₹250</b></div>
+        <div>₹4,500 order<b>₹450</b></div>
+        <div>₹10,000+ order<b>₹1,000 (max)</b></div>
+      </div></div></div></div>
+    <div class="bz-step"><div class="bz-anim"><ul class="bz-list">
+      <li>You earn 10% of what the client pays — for example, a ₹2,500 order pays you ₹250.</li>
+      <li>You can earn up to ₹1,000 from each booking.</li>
+      <li>We give you a personal link or code so every client you send is tracked to you.</li>
+      <li>We pay you within 2 days of the client paying in full.</li>
+    </ul></div></div>
+    <div class="bz-step"><div class="bz-anim">
+      <div class="bz-faq"><p>Questions?</p>
+        <details><summary>How do you track my clients? <span>＋</span></summary><p>We give you a personal link or code. Every client who uses it is counted as yours.</p></details>
+        <details><summary>When do I get my commission? <span>＋</span></summary><p>Within 2 days of the client paying in full.</p></details>
+        <details><summary>Can I refer my own business? <span>＋</span></summary><p>No. Self-referrals and your own business do not qualify.</p></details>
+      </div>
+      <details class="bz-tc"><summary>Terms &amp; Conditions <span>＋</span></summary><ul>
+        <li>Paid only after client pays in full.</li>
+        <li>No self-referrals or your own business.</li>
+        <li>Lead must be new — not an existing/past client.</li>
+        <li>Cancelled/refunded booking = no commission.</li>
+        <li>Can't stack with other discount/referral offers.</li>
+        <li>No fake/duplicate leads. One commission per booking.</li>
+        <li>Bluez360 verifies every lead. Decision is final.</li>
+      </ul></details>
+      <a class="bz-cta" style="margin-top:22px" href="https://instagram.com/bluez360" target="_blank">DM us to partner 📩</a>
+      <button class="bz-back" data-back>← choose again</button>
+    </div></div>
+  </div>
+
+  <div class="bz-dots" id="bz-dots"></div>
+
+  <div class="bz-foot">
+    All offers subject to Bluez360 approval. All rights reserved.<br>
+    360° virtual tours are a paid service, posted on Google Maps only.
+  </div>
+</div>
+</div>
+
+<script>
+  (function () {
+    var root = document.querySelector('.bz');
+    var intro = root.querySelector('#bz-intro');
+    var stories = root.querySelectorAll('.bz-story');
+    var dots = root.querySelector('#bz-dots');
+    var io = new IntersectionObserver(function (ents) {
+      ents.forEach(function (e) {
+        if (e.isIntersecting) e.target.classList.add('in');
+        else e.target.classList.remove('in'); // re-animate on scroll up/down
+      });
+    }, { threshold: .35 });
+
+    var stepDots = [];
+    var stepIo = new IntersectionObserver(function (ents) {
+      ents.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        var idx = +e.target.dataset.idx;
+        stepDots.forEach(function (d, i) { d.classList.toggle('act', i === idx); });
+      });
+    }, { threshold: .55 });
+
+    function show(id) {
+      intro.style.display = 'none';
+      stories.forEach(function (s) {
+        var on = s.id === 's-' + id;
+        s.classList.toggle('on', on);
+      });
+      var active = root.querySelector('#s-' + id);
+      active.querySelectorAll('.bz-anim').forEach(function (a) { a.classList.remove('in'); io.observe(a); });
+
+      // build progress dots — one per step
+      dots.innerHTML = '';
+      stepDots = [];
+      var steps = active.querySelectorAll('.bz-step');
+      steps.forEach(function (st, i) {
+        st.dataset.idx = i;
+        stepIo.observe(st);
+        var d = document.createElement('i');
+        if (i === 0) d.classList.add('act');
+        dots.appendChild(d);
+        stepDots.push(d);
+      });
+      dots.classList.add('on');
+
+      window.scrollTo({ top: 0 });
+      requestAnimationFrame(function () {
+        var first = active.querySelector('.bz-anim');
+        if (first) first.classList.add('in');
+      });
+    }
+    function reset() {
+      stories.forEach(function (s) { s.classList.remove('on'); });
+      dots.classList.remove('on');
+      intro.style.display = '';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    root.querySelectorAll('[data-story]').forEach(function (b) {
+      b.addEventListener('click', function () { show(b.dataset.story); });
+    });
+    root.querySelectorAll('[data-back]').forEach(function (b) {
+      b.addEventListener('click', reset);
+    });
+  })();
+</script>
+</body>
+</html>
